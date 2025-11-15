@@ -21,6 +21,22 @@ This report summarizes the experiments we ran on the mmWave MIMO human–robot d
 - TensorFlow 2.15 / Keras 2.15
 - Reproducibility: seeds fixed, early stopping + best-checkpoint saving
 
+## Baseline Metrics Snapshot
+
+The aggregated experiment metrics are pinned at `exports/metrics_flat_baseline.csv` (commit `915d6cb`). This snapshot contains:
+
+- Centralized & federated cross-day accuracy rows (train_day × test_day)
+- Safety metrics: Empty / Near / Mid / Far accuracies, critical error counts & rates
+- Per-class F1 scores (`f1_class_0` … `f1_class_9`) for both baseline and improved CNN
+
+The live auto-generated file `exports/metrics_flat.csv` is ignored (see `.gitignore`) to prevent noisy commits. Regenerate current metrics any time with:
+
+```powershell
+python scripts/export_metrics.py
+```
+
+When protocols change (new model variant, normalization, safety definition), create and commit a new snapshot (e.g. `metrics_flat_v2.csv`) for versioned comparison.
+
 ## How To Reproduce
 
 Run from repo root in PowerShell (Windows):
@@ -194,3 +210,4 @@ Open these images locally after reproducing the runs:
 - Aggregate centralized vs FL results into heatmaps for quick comparison.
 - Explore domain augmentation or mixup across days to reduce shift.
 - Optionally add EDA notebook for data distribution and sample visualizations.
+- Introduce tagged result snapshots (e.g. `results-baseline-v1`, `results-aug-v2`).

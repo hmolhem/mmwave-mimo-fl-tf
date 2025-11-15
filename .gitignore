@@ -43,6 +43,7 @@ datasets/
 checkpoints/
 logs/
 results/
+demo_results/
 
 # OS
 .DS_Store

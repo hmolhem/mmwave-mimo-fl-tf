@@ -49,6 +49,7 @@ Outputs, metrics and plots are saved under `outputs/` (ignored in git to keep th
 | Model (FL) | Day0  | Day1  | Day2  | Avg(Day1, Day2) | Notes |
 |------------|-------|-------|-------|------------------|-------|
 | Baseline   | 100%  | 91.0% | 82.9% | 86.95%          | Slightly below centralized on Day1/Day2 |
+| Improved   | 99.9% | 90.9% | 94.0% | 92.45%          | Improves Day2 vs centralized; near-perfect Day0 |
 
 - Baseline shows better Day1 but degrades more on Day2.
 - Improved CNN flips this: better Day2, slightly worse Day1.
@@ -66,6 +67,8 @@ Cross-day safety-aware results highlight robustness in critical zones (Near and 
 | Improved  | Day2     | 0.74       | 0.981     | 0.975    | 0.958    | 0                   |
 | Fed Base  | Day1     | 1.00       | 1.00      | 0.966    | 0.865    | 0                   |
 | Fed Base  | Day2     | 0.01       | 0.981     | 1.000    | 0.906    | 0                   |
+| Fed Impr  | Day1     | 1.00       | 1.00      | 0.927    | 0.865    | 0                   |
+| Fed Impr  | Day2     | 1.00       | 0.981     | 0.992    | 0.933    | 0                   |
 
 Notes:
 

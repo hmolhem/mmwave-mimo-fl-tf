@@ -107,6 +107,7 @@ Federated cross-day heatmaps and centralized Day0 bars are generated via `script
 [![Centralized Day0 Bars](figures/centralized_day0_bars.png)](figures/centralized_day0_bars.png)
 
 Figure Links:
+
 - [FL Baseline Heatmap (PNG)](figures/fl_baseline_cross_day_heatmap.png)
 - [FL Improved Heatmap (PNG)](figures/fl_improved_cross_day_heatmap.png)
 - [Centralized Day0 Bar Chart (PNG)](figures/centralized_day0_bars.png)
@@ -134,6 +135,7 @@ Clickable safety accuracy heatmaps (Near & Empty) across train/test days:
 [![Federated Improved Empty](figures/federated_improved_empty_accuracy_heatmap.png)](figures/federated_improved_empty_accuracy_heatmap.png)
 
 Safety Observations:
+
 - Near-zone accuracy remains high (>95%) for most in-domain cases; largest dip appears when training centralized on Day0 and testing Day2 (improved mitigates vs baseline).
 - Federated Improved model preserves strong Empty detection across Day2 whereas centralized baseline occasionally collapses (Empty accuracy ~0–1%).
 - Day1 as training domain yields uniformly high Near accuracy for all modes/models, suggesting it is temporally representative for the critical proximity class.

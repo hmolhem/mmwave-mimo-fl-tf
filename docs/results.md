@@ -48,6 +48,22 @@ Outputs, metrics and plots are saved under `outputs/` (ignored in git to keep th
 - Improved CNN flips this: better Day2, slightly worse Day1.
 - Improved reduces cross-day variance (88.8–91.3% vs 84.7–92.1%).
 
+### Safety Metrics (Key)
+
+Cross-day safety-aware results highlight robustness in critical zones (Near and Empty):
+
+| Model     | Test Day | Empty Acc. | Near Acc. | Mid Acc. | Far Acc. | Critical Near→Empty |
+|-----------|----------|------------|-----------|----------|----------|---------------------|
+| Baseline  | Day1     | 1.00       | 1.00      | 0.961    | 0.883    | 0                   |
+| Baseline  | Day2     | 0.00       | 0.971     | 1.000    | 0.931    | 0                   |
+| Improved  | Day1     | 1.00       | 1.00      | 0.907    | 0.843    | 0                   |
+| Improved  | Day2     | 0.74       | 0.981     | 0.975    | 0.958    | 0                   |
+
+Notes:
+
+- No critical Near→Empty errors observed across models/days in our runs.
+- Improved model notably boosts Day2 Empty and Far accuracy vs baseline.
+
 ### In-Domain (Day0) Sanity Checks
 
 - Centralized baseline (Day0): 100% test accuracy
@@ -81,6 +97,16 @@ Each report includes:
 - `safety_metrics.txt`
 - `classification_report.txt`
 - `test_*_metrics.json` (raw numbers)
+
+
+### Confusion Matrices (Local-only previews)
+
+Open these images locally after reproducing the runs:
+
+- Baseline → Day1: `outputs/cross_day/baseline_day0/train_day0_baseline/test_day1_report/confusion_matrix_normalized.png`
+- Baseline → Day2: `outputs/cross_day/baseline_day0/train_day0_baseline/test_day2_report/confusion_matrix_normalized.png`
+- Improved → Day1: `outputs/cross_day/improved_day0/train_day0_improved/test_day1_report/confusion_matrix_normalized.png`
+- Improved → Day2: `outputs/cross_day/improved_day0/train_day0_improved/test_day2_report/confusion_matrix_normalized.png`
 
 
 ## Next Steps

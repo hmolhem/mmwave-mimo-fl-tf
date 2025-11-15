@@ -19,13 +19,15 @@ TensorFlow/Keras implementation of CNN-based human-robot distance and DOA classi
 - [Quick Start](#quick-start)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
-  - [Centralized Training](#centralized-training)
-  - [Federated Learning](#federated-learning)
-  - [Cross-Day Robustness](#cross-day-robustness)
-  - [Running All Experiments](#running-all-experiments)
+    - [Detailed Usage Guide](docs/usage.md)
+    - [Centralized Training](#centralized-training)
+    - [Federated Learning](#federated-learning)
+    - [Cross-Day Robustness](#cross-day-robustness)
+    - [Running All Experiments](#running-all-experiments)
 - [Model Architectures](#model-architectures)
 - [Evaluation](#evaluation)
 - [Results](#results)
+- [Future Enhancements](#future-enhancements)
 - [Contributing](#contributing)
 - [License](#license)
 - [References](#references)
@@ -297,6 +299,7 @@ Use the master script to run all experiments sequentially:
 ```
 
 See `scripts/README.md` for detailed script documentation.
+\nFor complete CLI argument reference and advanced workflows see the [Detailed Usage Guide](docs/usage.md).
 
 ---
 
@@ -445,3 +448,4 @@ MIT License - see LICENSE file for details.
 **Project Status:** Implementation complete ✅ | Experiments pending 🔄 | Results TBD 📊
 
 For questions or issues, please open an issue on GitHub or contact the repository owner.
+\n---\n\n## Future Enhancements\n\nPlanned improvements and research extensions are tracked in the [Future Enhancements Roadmap](docs/future_enhancements.md), including:\n\n- Multi-day combined training baseline\n- Domain augmentation / mixup across days\n- Mixed precision & XLA acceleration\n- Automated hyperparameter sweeps\n- Packaging as installable module

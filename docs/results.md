@@ -44,6 +44,12 @@ Outputs, metrics and plots are saved under `outputs/` (ignored in git to keep th
 | Baseline  | 100%  | 92.1% | 84.7% | 88.4%           | Larger drop on Day2 |
 | Improved  | 100%  | 88.8% | 91.3% | 90.1%           | More balanced across days |
 
+#### Federated (Train on Day0)
+
+| Model (FL) | Day0  | Day1  | Day2  | Avg(Day1, Day2) | Notes |
+|------------|-------|-------|-------|------------------|-------|
+| Baseline   | 100%  | 91.0% | 82.9% | 86.95%          | Slightly below centralized on Day1/Day2 |
+
 - Baseline shows better Day1 but degrades more on Day2.
 - Improved CNN flips this: better Day2, slightly worse Day1.
 - Improved reduces cross-day variance (88.8–91.3% vs 84.7–92.1%).
@@ -58,6 +64,8 @@ Cross-day safety-aware results highlight robustness in critical zones (Near and 
 | Baseline  | Day2     | 0.00       | 0.971     | 1.000    | 0.931    | 0                   |
 | Improved  | Day1     | 1.00       | 1.00      | 0.907    | 0.843    | 0                   |
 | Improved  | Day2     | 0.74       | 0.981     | 0.975    | 0.958    | 0                   |
+| Fed Base  | Day1     | 1.00       | 1.00      | 0.966    | 0.865    | 0                   |
+| Fed Base  | Day2     | 0.01       | 0.981     | 1.000    | 0.906    | 0                   |
 
 Notes:
 

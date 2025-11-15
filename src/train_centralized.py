@@ -24,6 +24,7 @@ from models import (
     compile_model,
     get_model_callbacks,
 )
+from evaluation import generate_full_report
 
 
 def parse_args():
@@ -121,6 +122,16 @@ def main():
     with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=2)
     print(f"Metrics saved to {metrics_path}")
+    
+    # Generate full evaluation report with plots
+    print("\nGenerating evaluation plots...")
+    generate_full_report(
+        y_true=y_test,
+        y_pred=y_pred,
+        output_dir=output_dir,
+        history=history.history,
+        run_name=run_name,
+    )
     
     # Print summary
     print("\n" + "="*60)

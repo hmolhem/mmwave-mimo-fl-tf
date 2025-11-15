@@ -1,0 +1,1 @@
+TensorFlow/Keras implementation of CNN and federated learning on the IEEE DataPort mmWave MIMO radar range–azimuth dataset for human–robot workspace monitoring. Includes centralized and FedAvg-style training, evaluation scripts, and day-0/1/2 continual analysis.

@@ -1,0 +1,69 @@
+{
+  "data": {
+    "num_classes": 10,
+    "image_height": 128,
+    "image_width": 128,
+    "channels": 1,
+    "normalize": true,
+    "normalization_method": "minmax",
+    "data_augmentation": true
+  },
+  
+  "training": {
+    "centralized": {
+      "epochs": 50,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "validation_split": 0.15,
+      "early_stopping_patience": 10,
+      "reduce_lr_patience": 5,
+      "reduce_lr_factor": 0.5,
+      "min_learning_rate": 1e-6
+    },
+    
+    "federated": {
+      "num_rounds": 50,
+      "num_clients": 10,
+      "clients_per_round": 5,
+      "local_epochs": 5,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "iid_distribution": true
+    }
+  },
+  
+  "model": {
+    "type": "lightweight",
+    "architecture": {
+      "conv_filters": [16, 32, 64],
+      "conv_kernel_size": [3, 3],
+      "pool_size": [2, 2],
+      "dense_units": [128],
+      "dropout_rate": 0.5,
+      "use_batch_norm": true
+    }
+  },
+  
+  "paths": {
+    "data_dir": "data",
+    "checkpoints_dir": "checkpoints",
+    "results_dir": "results",
+    "logs_dir": "logs"
+  },
+  
+  "evaluation": {
+    "metrics": ["accuracy", "loss"],
+    "confusion_matrix": true,
+    "per_class_metrics": true,
+    "save_predictions": true
+  },
+  
+  "misc": {
+    "random_seed": 42,
+    "verbose": 1,
+    "use_gpu": true,
+    "gpu_memory_growth": true
+  }
+}

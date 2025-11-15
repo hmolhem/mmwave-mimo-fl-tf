@@ -1,5 +1,6 @@
 # Ignore datasets and large binaries
 data/
+!data/README.md
 *.mat
 
 # Python

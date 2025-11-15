@@ -5,6 +5,10 @@ import re
 from typing import List, Dict, Any, Optional
 
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.formatting import Rule
+from openpyxl.styles import Color, PatternFill
+from openpyxl.formatting.rule import ColorScaleRule
 
 # Script to aggregate centralized and federated cross-day metrics into flat CSV/JSON exports.
 # Output directory: exports/
@@ -274,6 +278,19 @@ def build_safety_summary(records: List[Record]) -> pd.DataFrame:
     return agg
 
 
+def apply_conditional_formatting(ws, min_color="FFF5F0", mid_color="FDBE85", max_color="D94801"):
+    # Applies a 3-color scale to numeric cells excluding header row
+    max_col = ws.max_column
+    max_row = ws.max_row
+    if max_row < 2 or max_col < 2:
+        return
+    cell_range = f"B2:{ws.cell(row=max_row, column=max_col).coordinate}"
+    rule = ColorScaleRule(start_type='min', start_color=min_color,
+                          mid_type='percent', mid_value=50, mid_color=mid_color,
+                          end_type='max', end_color=max_color)
+    ws.conditional_formatting.add(cell_range, rule)
+
+
 def write_excel(all_records: List[Record]):
     excel_path = os.path.join(EXPORT_DIR, 'metrics.xlsx')
     with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
@@ -297,6 +314,15 @@ def write_excel(all_records: List[Record]):
         # Safety summary
         safety_df = build_safety_summary(all_records)
         safety_df.to_excel(writer, sheet_name='safety_summary', index=False)
+    # Reopen workbook for formatting
+    wb = load_workbook(excel_path)
+    # Apply formatting to pivot and safety sheets
+    for sheet_name in wb.sheetnames:
+        if sheet_name in ['flat']:
+            continue
+        ws = wb[sheet_name]
+        apply_conditional_formatting(ws)
+    wb.save(excel_path)
     return excel_path
 
 

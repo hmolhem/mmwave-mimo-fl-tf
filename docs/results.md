@@ -55,6 +55,30 @@ Outputs, metrics and plots are saved under `outputs/` (ignored in git to keep th
 - Improved CNN flips this: better Day2, slightly worse Day1.
 - Improved reduces cross-day variance (88.8–91.3% vs 84.7–92.1%).
 
+#### Federated Cross-Day Accuracy (All Train Days)
+
+Baseline (FL):
+
+| Train → Test | Day0  | Day1  | Day2  |
+|--------------|-------|-------|-------|
+| Day0         | 100.0%| 91.0% | 82.9% |
+| Day1         | 94.9% | 98.2% | 94.5% |
+| Day2         | 89.3% | 95.1% | 97.0% |
+
+Improved (FL):
+
+| Train → Test | Day0  | Day1  | Day2  |
+|--------------|-------|-------|-------|
+| Day0         | 99.9% | 90.9% | 94.0% |
+| Day1         | 86.6% | 98.8% | 94.7% |
+| Day2         | 89.6% | 94.8% | 96.6% |
+
+Notes:
+
+- Training on Day1 or Day2 generally improves cross-day robustness vs training on Day0.
+- Baseline FL excels on Day1; Improved FL excels on Day2 and is more consistent overall.
+- Improved FL notably boosts Day0→Day2 transfer (94.0% vs 82.9% for baseline).
+
 ### Safety Metrics (Key)
 
 Cross-day safety-aware results highlight robustness in critical zones (Near and Empty):
@@ -122,6 +146,6 @@ Open these images locally after reproducing the runs:
 
 ## Next Steps
 
-- Run federated learning cross-day to test temporal robustness improvements.
+- Aggregate centralized vs FL results into heatmaps for quick comparison.
 - Explore domain augmentation or mixup across days to reduce shift.
 - Optionally add EDA notebook for data distribution and sample visualizations.

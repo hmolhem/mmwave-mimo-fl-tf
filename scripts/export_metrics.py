@@ -1,7 +1,8 @@
 import os
 import json
 import csv
-from typing import List, Dict, Any
+import re
+from typing import List, Dict, Any, Optional
 
 # Script to aggregate centralized and federated cross-day metrics into flat CSV/JSON exports.
 # Output directory: exports/
@@ -14,6 +15,31 @@ EXPORT_DIR = os.path.join(ROOT, 'exports')
 os.makedirs(EXPORT_DIR, exist_ok=True)
 
 Record = Dict[str, Any]
+
+def parse_classification_report(report_dir: str) -> Dict[int, float]:
+    """Parse sklearn classification_report.txt and return per-class f1 scores indexed by class int.
+    Expects a file named classification_report.txt inside report_dir.
+    Robust to varying whitespace. Lines starting with an integer class label are parsed.
+    """
+    path = os.path.join(report_dir, 'classification_report.txt')
+    f1: Dict[int, float] = {}
+    if not os.path.isfile(path):
+        return f1
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or not line[0].isdigit():
+                continue
+            # Regex: class_label then multiple floats then support int
+            # Example: '3     1.0000    0.4792    0.6479       144'
+            m = re.match(r'^(\d+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)\s+([0-9]*\.?[0-9]+)', line)
+            if not m:
+                continue
+            cls = int(m.group(1))
+            f1_val = float(m.group(4))
+            f1[cls] = f1_val
+    return f1
+
 
 def collect_federated() -> List[Record]:
     records: List[Record] = []
@@ -42,6 +68,8 @@ def collect_federated() -> List[Record]:
             with open(cross_day_results, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             for k, v in data.get('results', {}).items():
+                report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
+                f1_scores = parse_classification_report(report_dir)
                 records.append({
                     'mode': 'federated',
                     'model': model,
@@ -53,6 +81,7 @@ def collect_federated() -> List[Record]:
                     'rounds': data.get('rounds'),
                     'local_epochs': data.get('local_epochs'),
                     'normalize': data.get('normalize'),
+                    **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                 })
         else:
             # fallback: individual test_day*_metrics.json files
@@ -61,6 +90,8 @@ def collect_federated() -> List[Record]:
                     metrics_path = os.path.join(inner, fname)
                     with open(metrics_path, 'r', encoding='utf-8') as f:
                         v = json.load(f)
+                    report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
+                    f1_scores = parse_classification_report(report_dir)
                     records.append({
                         'mode': 'federated',
                         'model': model,
@@ -72,6 +103,7 @@ def collect_federated() -> List[Record]:
                         'rounds': None,
                         'local_epochs': None,
                         'normalize': None,
+                        **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                     })
     return records
 
@@ -102,6 +134,8 @@ def collect_centralized() -> List[Record]:
                 metrics_path = os.path.join(inner, fname)
                 with open(metrics_path, 'r', encoding='utf-8') as f:
                     v = json.load(f)
+                report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
+                f1_scores = parse_classification_report(report_dir)
                 records.append({
                     'mode': 'centralized',
                     'model': model,
@@ -113,13 +147,17 @@ def collect_centralized() -> List[Record]:
                     'rounds': None,
                     'local_epochs': None,
                     'normalize': None,
+                    **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                 })
     return records
 
 def write_flat_csv(records: List[Record], out_path: str):
     if not records:
         return
-    fieldnames = list(records[0].keys())
+    # Ensure consistent field ordering: basic keys then f1 scores
+    base_keys = [k for k in records[0].keys() if not k.startswith('f1_class_')]
+    f1_keys = sorted([k for k in records[0].keys() if k.startswith('f1_class_')], key=lambda x: int(x.split('_')[-1]))
+    fieldnames = base_keys + f1_keys
     with open(out_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

@@ -374,7 +374,12 @@ Classes are grouped into safety-critical regions:
 
 ## Results
 
-**Note:** To be filled after running experiments.
+Quick link: see the full report in [docs/results.md](docs/results.md).
+
+Summary (Train on Day0):
+
+- Baseline CNN → Day1: 92.1%, Day2: 84.7%
+- Improved CNN → Day1: 88.8%, Day2: 91.3%
 
 ### Centralized vs. Federated Comparison
 

@@ -4,6 +4,8 @@ import csv
 import re
 from typing import List, Dict, Any, Optional
 
+import pandas as pd
+
 # Script to aggregate centralized and federated cross-day metrics into flat CSV/JSON exports.
 # Output directory: exports/
 
@@ -192,7 +194,12 @@ def write_flat_csv(records: List[Record], out_path: str):
     if not records:
         return
     # Ensure consistent field ordering: basic keys then f1 scores
-    base_keys = [k for k in records[0].keys() if not k.startswith('f1_class_') and not k.endswith('_rate') and not k.startswith('f1_')]
+    safety_identifiers = [
+        'empty_accuracy','near_accuracy','mid_accuracy','far_accuracy',
+        'critical_near_as_empty','false_alarm_empty_as_near',
+        'critical_near_as_empty_rate','false_alarm_empty_as_near_rate'
+    ]
+    base_keys = [k for k in records[0].keys() if k not in safety_identifiers and not k.startswith('f1_class_')]
     # Safety accuracy and counts (excluding rates) right after base keys
     safety_keys = [k for k in records[0].keys() if k in [
         'empty_accuracy','near_accuracy','mid_accuracy','far_accuracy','critical_near_as_empty','false_alarm_empty_as_near']]
@@ -238,6 +245,61 @@ def write_pivot_csv(pivot: Dict[str, Dict[str, float]], out_path: str):
             writer.writerow(row)
 
 
+def build_safety_summary(records: List[Record]) -> pd.DataFrame:
+    rows = []
+    for r in records:
+        rows.append({
+            'mode': r['mode'],
+            'model': r['model'],
+            'train_day': r['train_day'],
+            'test_day': r['test_day'],
+            'empty_accuracy': r.get('empty_accuracy'),
+            'near_accuracy': r.get('near_accuracy'),
+            'mid_accuracy': r.get('mid_accuracy'),
+            'far_accuracy': r.get('far_accuracy'),
+            'critical_near_as_empty': r.get('critical_near_as_empty'),
+            'false_alarm_empty_as_near': r.get('false_alarm_empty_as_near')
+        })
+    df = pd.DataFrame(rows)
+    # Aggregate: mean accuracies, sum critical errors per (mode, model, train_day)
+    agg = df.groupby(['mode','model','train_day']).agg({
+        'empty_accuracy':'mean',
+        'near_accuracy':'mean',
+        'mid_accuracy':'mean',
+        'far_accuracy':'mean',
+        'critical_near_as_empty':'sum',
+        'false_alarm_empty_as_near':'sum'
+    }).reset_index()
+    agg = agg.sort_values(['mode','model','train_day'])
+    return agg
+
+
+def write_excel(all_records: List[Record]):
+    excel_path = os.path.join(EXPORT_DIR, 'metrics.xlsx')
+    with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
+        # Flat sheet
+        flat_df = pd.read_csv(os.path.join(EXPORT_DIR, 'metrics_flat.csv'))
+        flat_df.to_excel(writer, sheet_name='flat', index=False)
+        # Pivot sheets
+        for mode in ['federated','centralized']:
+            for model in ['baseline','improved']:
+                pivot = pivot_accuracy(all_records, mode, model)
+                if pivot:
+                    # Convert pivot dict to DataFrame
+                    df_rows = []
+                    for train_day, cols in pivot.items():
+                        row = {'TrainDay': int(train_day)}
+                        for test_day, acc in cols.items():
+                            row[f'TestDay{test_day}'] = acc
+                        df_rows.append(row)
+                    df = pd.DataFrame(df_rows).sort_values('TrainDay')
+                    df.to_excel(writer, sheet_name=f'{mode}_{model}', index=False)
+        # Safety summary
+        safety_df = build_safety_summary(all_records)
+        safety_df.to_excel(writer, sheet_name='safety_summary', index=False)
+    return excel_path
+
+
 def main():
     fed_records = collect_federated()
     cent_records = collect_centralized()
@@ -259,6 +321,9 @@ def main():
                 pivot_csv = os.path.join(EXPORT_DIR, f'{mode}_{model}_accuracy_matrix.csv')
                 write_pivot_csv(pivot, pivot_csv)
 
+    # Write Excel workbook
+    excel_path = write_excel(all_records)
+
     print('Export complete:')
     print(f'  Flat CSV: {flat_csv}')
     print(f'  Flat JSON: {flat_json}')
@@ -268,6 +333,7 @@ def main():
             path = os.path.join(EXPORT_DIR, f'{mode}_{model}_accuracy_matrix.csv')
             if os.path.isfile(path):
                 print(f'    {path}')
+    print(f'  Excel workbook: {excel_path}')
 
 if __name__ == '__main__':
     main()

@@ -19,3 +19,7 @@ notebooks/.ipynb_checkpoints/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Project temp and garbage folders
+tmpscripts/
+garbage/

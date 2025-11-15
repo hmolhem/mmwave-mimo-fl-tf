@@ -103,6 +103,27 @@ Interpretation:
 - Variability: Baseline FL row std devs ≈ [7.9, 1.6, 3.3]; Improved FL ≈ [3.9, 5.0, 2.9]. Improved model reduces variability when trained on Day0; baseline more stable when trained on Day1.
 - Recommendation: If future data resembles later temporal conditions (Day2), prefer Improved model trained on Day0 or Day2; if Day1 conditions dominate, baseline trained on Day1 is marginally stronger.
 
+### Safety Heatmaps
+
+Clickable safety accuracy heatmaps (Near & Empty) across train/test days:
+
+[![Centralized Baseline Near](figures/centralized_baseline_near_accuracy_heatmap.png)](figures/centralized_baseline_near_accuracy_heatmap.png)
+[![Centralized Improved Near](figures/centralized_improved_near_accuracy_heatmap.png)](figures/centralized_improved_near_accuracy_heatmap.png)
+[![Federated Baseline Near](figures/federated_baseline_near_accuracy_heatmap.png)](figures/federated_baseline_near_accuracy_heatmap.png)
+[![Federated Improved Near](figures/federated_improved_near_accuracy_heatmap.png)](figures/federated_improved_near_accuracy_heatmap.png)
+
+[![Centralized Baseline Empty](figures/centralized_baseline_empty_accuracy_heatmap.png)](figures/centralized_baseline_empty_accuracy_heatmap.png)
+[![Centralized Improved Empty](figures/centralized_improved_empty_accuracy_heatmap.png)](figures/centralized_improved_empty_accuracy_heatmap.png)
+[![Federated Baseline Empty](figures/federated_baseline_empty_accuracy_heatmap.png)](figures/federated_baseline_empty_accuracy_heatmap.png)
+[![Federated Improved Empty](figures/federated_improved_empty_accuracy_heatmap.png)](figures/federated_improved_empty_accuracy_heatmap.png)
+
+Safety Observations:
+- Near-zone accuracy remains high (>95%) for most in-domain cases; largest dip appears when training centralized on Day0 and testing Day2 (improved mitigates vs baseline).
+- Federated Improved model preserves strong Empty detection across Day2 whereas centralized baseline occasionally collapses (Empty accuracy ~0–1%).
+- Day1 as training domain yields uniformly high Near accuracy for all modes/models, suggesting it is temporally representative for the critical proximity class.
+- Critical errors (Near→Empty) stay at zero across all configurations; robustness differences manifest as reductions in Empty accuracy rather than unsafe misclassification.
+- Recommendation: For safety-critical deployment emphasizing reliable Empty detection, prefer Federated Improved or Centralized Improved trained with inclusion of Day2 data (if available) or multi-day federation.
+
 ### Safety Metrics (Key)
 
 Cross-day safety-aware results highlight robustness in critical zones (Near and Empty):

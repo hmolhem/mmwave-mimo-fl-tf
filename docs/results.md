@@ -79,6 +79,16 @@ Notes:
 - Baseline FL excels on Day1; Improved FL excels on Day2 and is more consistent overall.
 - Improved FL notably boosts Day0→Day2 transfer (94.0% vs 82.9% for baseline).
 
+### Heatmaps
+
+Federated cross-day heatmaps and centralized Day0 bars are generated via `scripts/plot_heatmaps.py` and saved under `docs/figures/`.
+
+![FL Baseline Heatmap](figures/fl_baseline_cross_day_heatmap.png)
+
+![FL Improved Heatmap](figures/fl_improved_cross_day_heatmap.png)
+
+![Centralized Day0 Bars](figures/centralized_day0_bars.png)
+
 ### Safety Metrics (Key)
 
 Cross-day safety-aware results highlight robustness in critical zones (Near and Empty):

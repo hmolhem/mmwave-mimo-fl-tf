@@ -381,31 +381,25 @@ Summary (Train on Day0):
 - Baseline CNN → Day1: 92.1%, Day2: 84.7%
 - Improved CNN → Day1: 88.8%, Day2: 91.3%
 
-### Centralized vs. Federated Comparison
+Federated (All train days):
 
-| Model    | Day | Centralized Acc. | Federated Acc. | Δ (Cent - Fed) |
-|----------|-----|------------------|----------------|----------------|
-| Baseline | 0   | TBD              | TBD            | TBD            |
-| Baseline | 1   | TBD              | TBD            | TBD            |
-| Baseline | 2   | TBD              | TBD            | TBD            |
-| Improved | 0   | TBD              | TBD            | TBD            |
-| Improved | 1   | TBD              | TBD            | TBD            |
-| Improved | 2   | TBD              | TBD            | TBD            |
+- Baseline FL (in-domain): Day0 100.0%, Day1 98.2%, Day2 97.0%
+- Improved FL (in-domain): Day0 99.9%, Day1 98.8%, Day2 96.6%
 
-### Cross-Day Robustness (Domain Shift)
+Visuals:
 
-|           | Test Day 0 | Test Day 1 | Test Day 2 |
-|-----------|------------|------------|------------|
-| Train Day 0 | TBD (in)   | TBD        | TBD        |
-| Train Day 1 | TBD        | TBD (in)   | TBD        |
-| Train Day 2 | TBD        | TBD        | TBD (in)   |
+![FL Baseline Heatmap](docs/figures/fl_baseline_cross_day_heatmap.png)
 
-**Note:** (in) = in-domain accuracy
+![FL Improved Heatmap](docs/figures/fl_improved_cross_day_heatmap.png)
 
-### Safety-Critical Errors
+![Centralized Day0 Bars](docs/figures/centralized_day0_bars.png)
 
-- **Near → Empty misclassifications**: TBD
-- **Total critical errors**: TBD
+### Best Configuration Recommendations
+
+- Centralized Day0 → Prefer Improved CNN for stronger Day2 generalization (91.3%).
+- Federated overall → Improved CNN for Day0→Day2 transfer (94.0% vs 82.9% baseline).
+- If target day resembles Day1 conditions → Baseline FL achieves the strongest Day1 performance (98.2% in-domain, 94–95% cross-day).
+- Safety: No critical Near→Empty errors observed across reported runs; both models safe, improved often boosts Empty/Far on Day2.
 
 ---
 

@@ -29,3 +29,4 @@ Thumbs.db
 # Project temp and garbage folders
 tmpscripts/
 garbage/
+exports/metrics_flat.csv

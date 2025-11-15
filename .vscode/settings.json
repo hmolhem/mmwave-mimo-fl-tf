@@ -3,5 +3,6 @@
   "python.terminal.activateEnvironment": true,
   "python.analysis.extraPaths": ["${workspaceFolder}\\src"],
   "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "jupyter.jupyterServerType": "local"
+"jupyter.jupyterServerType": "local",
+"python-envs.pythonProjects": []
 }

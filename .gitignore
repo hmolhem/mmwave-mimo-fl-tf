@@ -3,6 +3,11 @@ data/
 !data/README.md
 *.mat
 
+# Model files and outputs (too large for git)
+*.keras
+*.h5
+outputs/
+
 # Python
 __pycache__/
 *.py[cod]

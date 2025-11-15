@@ -83,8 +83,12 @@ def train_on_day(
     print(f"Training on day{train_day} with {model_type} model")
     print(f"{'='*60}\n")
 
+    # Construct day directory path
+    data_root = Path(__file__).parent.parent / "data"
+    day_dir = data_root / f"day{train_day}"
+    
     # Load training data
-    X_train, y_train = load_day_train_concatenated(train_day)
+    X_train, y_train, device_ids = load_day_train_concatenated(str(day_dir))
     print(f"Loaded {len(X_train)} training samples from day{train_day}")
 
     # Split train/validation
@@ -97,8 +101,8 @@ def train_on_day(
     print(f"Train: {len(X_tr)} samples, Val: {len(X_val)} samples")
 
     # Create TF datasets
-    train_ds = make_tf_dataset(X_tr, y_tr, batch_size, normalize, shuffle=True, seed=seed)
-    val_ds = make_tf_dataset(X_val, y_val, batch_size, normalize, shuffle=False)
+    train_ds = make_tf_dataset(X_tr, y_tr, batch_size, shuffle=True, normalize=normalize)
+    val_ds = make_tf_dataset(X_val, y_val, batch_size, shuffle=False, normalize=normalize)
 
     # Build model
     if model_type == "baseline":
@@ -206,12 +210,16 @@ def evaluate_on_day(
     print(f"Evaluating on day{test_day} test data")
     print(f"{'='*60}\n")
 
+    # Construct day directory path
+    data_root = Path(__file__).parent.parent / "data"
+    day_dir = data_root / f"day{test_day}"
+    
     # Load test data
-    X_test, y_test = load_day_test(test_day)
+    X_test, y_test = load_day_test(str(day_dir))
     print(f"Loaded {len(X_test)} test samples from day{test_day}")
 
     # Create TF dataset
-    test_ds = make_tf_dataset(X_test, y_test, batch_size, normalize, shuffle=False)
+    test_ds = make_tf_dataset(X_test, y_test, batch_size, shuffle=False, normalize=normalize)
 
     # Evaluate
     test_loss, test_acc = model.evaluate(test_ds, verbose=1)
@@ -249,9 +257,9 @@ def evaluate_on_day(
         generate_full_report(
             y_true=y_test,
             y_pred=y_pred_classes,
-            history_dict=None,  # No training history for cross-day evaluation
+            history=None,  # No training history for cross-day evaluation
             output_dir=str(report_dir),
-            title_suffix=title_suffix,
+            run_name=f"test_day{test_day}{title_suffix}",
         )
 
         print(f"Evaluation results saved to: {output_dir}")

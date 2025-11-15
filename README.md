@@ -388,11 +388,11 @@ Federated (All train days):
 
 Visuals:
 
-![FL Baseline Heatmap](docs/figures/fl_baseline_cross_day_heatmap.png)
+[![FL Baseline Heatmap](docs/figures/fl_baseline_cross_day_heatmap.png)](docs/figures/fl_baseline_cross_day_heatmap.png)
 
-![FL Improved Heatmap](docs/figures/fl_improved_cross_day_heatmap.png)
+[![FL Improved Heatmap](docs/figures/fl_improved_cross_day_heatmap.png)](docs/figures/fl_improved_cross_day_heatmap.png)
 
-![Centralized Day0 Bars](docs/figures/centralized_day0_bars.png)
+[![Centralized Day0 Bars](docs/figures/centralized_day0_bars.png)](docs/figures/centralized_day0_bars.png)
 
 ### Best Configuration Recommendations
 

@@ -83,11 +83,25 @@ Notes:
 
 Federated cross-day heatmaps and centralized Day0 bars are generated via `scripts/plot_heatmaps.py` and saved under `docs/figures/`.
 
-![FL Baseline Heatmap](figures/fl_baseline_cross_day_heatmap.png)
+<!-- Clickable thumbnails -->
+[![FL Baseline Heatmap](figures/fl_baseline_cross_day_heatmap.png)](figures/fl_baseline_cross_day_heatmap.png)
 
-![FL Improved Heatmap](figures/fl_improved_cross_day_heatmap.png)
+[![FL Improved Heatmap](figures/fl_improved_cross_day_heatmap.png)](figures/fl_improved_cross_day_heatmap.png)
 
-![Centralized Day0 Bars](figures/centralized_day0_bars.png)
+[![Centralized Day0 Bars](figures/centralized_day0_bars.png)](figures/centralized_day0_bars.png)
+
+Figure Links:
+- [FL Baseline Heatmap (PNG)](figures/fl_baseline_cross_day_heatmap.png)
+- [FL Improved Heatmap (PNG)](figures/fl_improved_cross_day_heatmap.png)
+- [Centralized Day0 Bar Chart (PNG)](figures/centralized_day0_bars.png)
+
+Interpretation:
+
+- Federated Baseline: Training on Day1 yields the highest average accuracy across all test days (~95.2%), indicating Day1 is the most representative temporal snapshot for this model.
+- Federated Improved: Training on Day0 produces the highest overall average (~94.9%) and the strongest Day0→Day2 transfer (94.0%), suggesting deeper model benefits from Day0 diversity for later-day generalization.
+- Cross-Day Transfer: Baseline suffers a large drop Day0→Day2 (82.9%) versus Improved (94.0%), highlighting architectural impact on temporal robustness.
+- Variability: Baseline FL row std devs ≈ [7.9, 1.6, 3.3]; Improved FL ≈ [3.9, 5.0, 2.9]. Improved model reduces variability when trained on Day0; baseline more stable when trained on Day1.
+- Recommendation: If future data resembles later temporal conditions (Day2), prefer Improved model trained on Day0 or Day2; if Day1 conditions dominate, baseline trained on Day1 is marginally stronger.
 
 ### Safety Metrics (Key)
 

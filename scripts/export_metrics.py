@@ -41,6 +41,37 @@ def parse_classification_report(report_dir: str) -> Dict[int, float]:
     return f1
 
 
+def parse_safety_metrics(report_dir: str) -> Dict[str, Optional[float]]:
+    """Parse safety_metrics.txt extracting accuracy and critical error counts.
+    Returns dict with keys: empty_accuracy, near_accuracy, mid_accuracy, far_accuracy,
+    critical_near_as_empty, critical_near_as_empty_rate, false_alarm_empty_as_near,
+    false_alarm_empty_as_near_rate. Missing values become None.
+    """
+    path = os.path.join(report_dir, 'safety_metrics.txt')
+    keys = [
+        'empty_accuracy', 'near_accuracy', 'mid_accuracy', 'far_accuracy',
+        'critical_near_as_empty', 'critical_near_as_empty_rate',
+        'false_alarm_empty_as_near', 'false_alarm_empty_as_near_rate'
+    ]
+    result: Dict[str, Optional[float]] = {k: None for k in keys}
+    if not os.path.isfile(path):
+        return result
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if ':' not in line:
+                continue
+            name, val = line.split(':', 1)
+            name = name.strip()
+            val = val.strip()
+            if name in result:
+                try:
+                    result[name] = float(val)
+                except ValueError:
+                    result[name] = None
+    return result
+
+
 def collect_federated() -> List[Record]:
     records: List[Record] = []
     if not os.path.isdir(CROSS_DAY_FED_DIR):
@@ -70,6 +101,7 @@ def collect_federated() -> List[Record]:
             for k, v in data.get('results', {}).items():
                 report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
                 f1_scores = parse_classification_report(report_dir)
+                safety = parse_safety_metrics(report_dir)
                 records.append({
                     'mode': 'federated',
                     'model': model,
@@ -81,6 +113,7 @@ def collect_federated() -> List[Record]:
                     'rounds': data.get('rounds'),
                     'local_epochs': data.get('local_epochs'),
                     'normalize': data.get('normalize'),
+                    **safety,
                     **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                 })
         else:
@@ -92,6 +125,7 @@ def collect_federated() -> List[Record]:
                         v = json.load(f)
                     report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
                     f1_scores = parse_classification_report(report_dir)
+                    safety = parse_safety_metrics(report_dir)
                     records.append({
                         'mode': 'federated',
                         'model': model,
@@ -103,6 +137,7 @@ def collect_federated() -> List[Record]:
                         'rounds': None,
                         'local_epochs': None,
                         'normalize': None,
+                        **safety,
                         **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                     })
     return records
@@ -136,6 +171,7 @@ def collect_centralized() -> List[Record]:
                     v = json.load(f)
                 report_dir = os.path.join(inner, f'test_day{v["test_day"]}_report')
                 f1_scores = parse_classification_report(report_dir)
+                safety = parse_safety_metrics(report_dir)
                 records.append({
                     'mode': 'centralized',
                     'model': model,
@@ -147,6 +183,7 @@ def collect_centralized() -> List[Record]:
                     'rounds': None,
                     'local_epochs': None,
                     'normalize': None,
+                    **safety,
                     **{f'f1_class_{i}': f1_scores.get(i) for i in range(10)}
                 })
     return records
@@ -155,9 +192,13 @@ def write_flat_csv(records: List[Record], out_path: str):
     if not records:
         return
     # Ensure consistent field ordering: basic keys then f1 scores
-    base_keys = [k for k in records[0].keys() if not k.startswith('f1_class_')]
+    base_keys = [k for k in records[0].keys() if not k.startswith('f1_class_') and not k.endswith('_rate') and not k.startswith('f1_')]
+    # Safety accuracy and counts (excluding rates) right after base keys
+    safety_keys = [k for k in records[0].keys() if k in [
+        'empty_accuracy','near_accuracy','mid_accuracy','far_accuracy','critical_near_as_empty','false_alarm_empty_as_near']]
+    rate_keys = [k for k in records[0].keys() if k.endswith('_rate')]
     f1_keys = sorted([k for k in records[0].keys() if k.startswith('f1_class_')], key=lambda x: int(x.split('_')[-1]))
-    fieldnames = base_keys + f1_keys
+    fieldnames = base_keys + safety_keys + rate_keys + f1_keys
     with open(out_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

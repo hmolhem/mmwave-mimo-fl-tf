@@ -139,10 +139,17 @@ def load_day_train_concatenated(day_dir: str) -> Tuple[np.ndarray, np.ndarray, n
 
 
 def load_day_test(day_dir: str) -> Tuple[np.ndarray, np.ndarray]:
-	test_path = os.path.join(day_dir, "test_data", "mmwave_data_test.mat")
-	if not os.path.exists(test_path):
-		raise FileNotFoundError(f"Test file not found: {test_path}")
-	return load_test_file(test_path)
+	"""Load test set for a given day, supporting both 'test_data' and 'test_dat' folders."""
+	candidates = [
+		os.path.join(day_dir, "test_data", "mmwave_data_test.mat"),
+		os.path.join(day_dir, "test_dat", "mmwave_data_test.mat"),
+	]
+	for test_path in candidates:
+		if os.path.exists(test_path):
+			return load_test_file(test_path)
+	raise FileNotFoundError(
+		"Test file not found. Tried: " + ", ".join(candidates)
+	)
 
 
 def train_val_split(X: np.ndarray, y: np.ndarray, val_ratio: float = 0.2, seed: int = 42) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
